@@ -48,11 +48,13 @@ ca_cet_counts <- ca_cet_wrang %>%
 
 ca_cet_counts
 
+#Download US map as sf:
 usa_sf <- ne_download(scale = "large", type = 'states', category = 'cultural', returnclass = 'sf')
 
+#Plot (raster + sf):
 ggplot() +
   geom_raster(data = ca_cet_counts, aes(x = x, y = y, fill = counts))+
-  geom_sf(data = usa_sf)+ 
+  geom_sf(data = usa_sf, color = "white",  fill = "gray24")+ 
   coord_sf(xlim = c(-125, -115), ylim = c(32, 38), expand = FALSE) +
   scale_fill_gradientn(colors = c("gray97","skyblue1","dodgerblue4")) +
   theme_minimal() +

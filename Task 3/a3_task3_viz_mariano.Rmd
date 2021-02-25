@@ -1,0 +1,101 @@
+---
+title: "a3_task3_viz_mariano"
+author: "Mariano Viz"
+date: "24/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(tidytext)
+library(textdata)
+library(pdftools)
+library(ggwordcloud)
+
+```
+
+
+
+```{r}
+#Read in pdf
+great_gatsby <- pdf_text("The Great Gatsby.pdf")
+
+#Get it into a data frame and tidy format:
+gatsby_df <- data.frame(great_gatsby) %>% 
+  mutate(text_tidy = str_split(great_gatsby, pattern = '\\n')) %>% #split by line
+  unnest(text_tidy) %>% #each individual line in a row
+  mutate(text_tidy = str_trim(text_tidy)) %>% #get rid of lead/tail withespace
+  slice(-(1:41)) %>%  #get rid of text before chapter 1
+  mutate(chapter = case_when(str_detect(text_tidy, pattern = "Chapter") ~ text_tidy,
+                             TRUE ~ NA_character_)) %>% #split by chapter (grouping variable) 
+  fill(chapter) %>% #fill NA values in chapter col 
+  separate(col = chapter, into = c("chap", "num"), sep = " ") %>%  #separate chapter number
+  mutate(chapter = as.numeric(as.character(num))) #numbers to chapter col in class numeric
+
+#Get tokens and remove stop_words:
+gatsby_tok_nosw <- gatsby_df %>% 
+  unnest_tokens(word, text_tidy) %>% #unnest tokens
+  dplyr::select(-c(great_gatsby, chap, num)) %>% #get rid of cols except for 'chapter' and 'word'
+  anti_join(stop_words) %>% #remove stop_words
+  filter(word != c("don’t", "didn’t")) #also remove words 'don’t' and 'didn’t' (were not recognized because in stop_word they appear with ' instead of ’ -e.g.: don't != don’t)
+
+```
+
+
+
+```{r}
+#Most used words by chapter
+gatsby_counts <- gatsby_tok_nosw %>% 
+  count(chapter, word)
+gatsby_top5 <- gatsby_counts %>% 
+  group_by(chapter) %>% 
+  arrange(-n) %>% 
+  slice(1:5)
+
+#Plots
+ggplot(data = gatsby_top5, aes(x = word, y = n)) +
+  geom_col(fill = "orangered1") +
+  facet_wrap(~chapter, scales = "free") +
+  coord_flip()
+
+#can make a word cloud 
+
+```
+
+
+
+
+```{r}
+#Sentiment analysis (NRC lexicon)
+get_sentiments(lexicon = "nrc")
+
+garsby_sent_nrc <- gatsby_tok_nosw %>% 
+  inner_join(get_sentiments("nrc"))
+
+#Plot
+gatsby_nrc_counts <- garsby_sent_nrc %>% 
+  count(chapter, sentiment)
+
+ggplot(data = gatsby_nrc_counts, aes(x = sentiment, y = n)) +
+  geom_col() +
+  facet_wrap(~chapter)+
+  coord_flip()
+  
+
+
+#**Citation for NRC lexicon**: Crowdsourcing a Word-Emotion Association Lexicon, Saif Mohammad and Peter Turney, Computational Intelligence, 29 (3), 436-465, 2013.
+
+```
+
+
+
+
+
+
+
+
+
+
