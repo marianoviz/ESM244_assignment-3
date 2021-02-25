@@ -20,7 +20,7 @@ library(ggwordcloud)
 ```
 
 ## Summary
-In this report, I conduct a text analysis of F. Scott Fitzgerald's book *The Great Gatsby*. First, I wrangle the data to structure the text in tidy format. Next, I analyze the most frequently used words by F. Scott Fitzgerald and make plots showing the top 5 most used words by chapter and the top 100 most used words in the book. Finally, I perform a sentiment analysis using the NRC lexicon and show the results for each chapter in a bar plot.Edition used in the analysis: Fitzgerald, F. S. (2014). The great Gatsby. General Press.
+In this report, I conduct a text analysis of F. Scott Fitzgerald's book *The Great Gatsby*. First, I wrangle the data to structure the text in tidy format. Next, I analyze the most frequently used words by F. Scott Fitzgerald and make plots showing the top 5 most used words by chapter and the top 100 most used words in the book. Finally, I perform a sentiment analysis using the NRC lexicon and show the results for each chapter in a bar plot. Edition used in the analysis: Fitzgerald, F. S. (2014). The great Gatsby. General Press.
 
 ## Tidy text format
 
@@ -76,19 +76,19 @@ ggplot(data = gatsby_top5, aes(x = word, y = n)) +
 
 ```
 
-**Figure 1.** Top 5 most frequently used words by chapter (1-9).
+**Figure 1.** Top 5 most frequently used words by chapter (1-9). Orange bars indicate total word counts for each chapter.
 
 
 
 
 ```{r}
-#Word cloud plot (top 100 in the book)
-
+#Top 100 most used words:
 gatsby_top100 <- gatsby_tok_nosw %>% 
   count(word) %>% 
   arrange(-n) %>% 
   slice(1:100)
 
+#Word cloud plot (top 100 in the book)
 gatsby_top100_wcloud <- ggplot(data = gatsby_top100, aes(label = word)) +
   geom_text_wordcloud(aes(color = n, size = n), shape = "circle") +
   scale_size_area(max_size = 6) +
@@ -99,7 +99,7 @@ gatsby_top100_wcloud
 
 ```
 
-**Figure 2.** Top 100 most used words in *The Great Gatsby*. 
+**Figure 2.** Top 100 most used words in *The Great Gatsby*. Size and color of the words in the plot reflect the frequency with which they appear in the original text.
 
 
 ## Sentiment analysis
@@ -122,9 +122,6 @@ garsby_sent_nrc <- gatsby_tok_nosw %>%
 #Sentiment analysis plot:
 gatsby_nrc_counts <- garsby_sent_nrc %>% 
   count(chapter, sentiment)
-
-chapter.labs<-c("Chapter 1", "Chapter 2", "Chapter 3", "Chapter 4", "Chapter 5", "Chapter 6", "Chapter 7", "Chapter 8", "Chapter 9")
-names(chapter.labs)<-c(1, 2, 3, 4, 5, 6, 7, 8, 9)
 
 ggplot(data = gatsby_nrc_counts, aes(x = sentiment, y = n)) +
   geom_col(fill = "orangered1", alpha = 0.65) +

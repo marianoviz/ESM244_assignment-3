@@ -1,5 +1,5 @@
 ---
-title: "CA 2008 Oil Spill Incidents"
+title: "CA 2008 Oil Spill Events"
 author: "Mariano Viz"
 date: "20/02/2021"
 output: 
@@ -72,7 +72,7 @@ tm_shape(oil_spill) +
 
 ```
 
-**Figure 1.** Oil spill events in California in 2008. Data is divided based on location.Green and yellow points indicate inland and marine event locations, respectively. Data: CDFW (2009). 
+**Figure 1.** Oil spill events in California in 2008. Events are divided based on location. Green and yellow points indicate inland and marine event locations, respectively. Data: CDFW (2009). 
 
 
 
@@ -102,7 +102,7 @@ ggplot(data = oil_spill_counts) +
 
 ```
 
-**Figure 2.** Count of California’s inland oil spill events by county in 2008. County color, from salmon to dark red, reflects the number of inland oil spill incidents. Data: CDFW (2009).
+**Figure 2.** Counts of California’s inland oil spill events by county in 2008. County color, from salmon to dark red, reflects the number of inland oil spill incidents. Data: CDFW (2009).
 
 
 
